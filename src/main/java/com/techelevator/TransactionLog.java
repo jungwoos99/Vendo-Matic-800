@@ -31,9 +31,7 @@ public class TransactionLog {
     protected boolean purchase = false;
     protected boolean feedMoney = false;
     protected boolean giveChange = false;
-    Display display = new Display();
     NumberFormat dollarAmount = NumberFormat.getCurrencyInstance();
-    private String message = new String();
 
     public void writeMethod() {
 
@@ -56,6 +54,7 @@ public class TransactionLog {
                 writer.println(printChangeGiven());
                 giveChange = false;
             }
+            writer.flush();
         } catch (FileNotFoundException e) {
             System.out.println("File was not found.");
         }

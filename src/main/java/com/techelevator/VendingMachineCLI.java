@@ -25,7 +25,6 @@ public class VendingMachineCLI {
 	private Display display = new Display();
 	private static Purchase purchase;
 	private static Menu menu;
-	private static TransactionLog log = new TransactionLog();
 
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;

@@ -24,7 +24,6 @@ public class Display {
     private static final String DRINK_MESSAGE = "Glug Glug, Yum!";
     private static final String GUM_MESSAGE = "Chew Chew, Yum!";
 
-    private static Purchase purchase = new Purchase();
     private static Display display = new Display();
 
     //Displays the lines of the csv file line by line
