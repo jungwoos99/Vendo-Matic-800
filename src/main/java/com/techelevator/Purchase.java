@@ -152,6 +152,8 @@ public class Purchase extends VendingMachineCLI {
                     System.out.println("\n" + getCurrentMoneyProvided());
                 }
                 transactionLog.setBalanceAfterTransaction(currentBalance);
+                transactionLog.printFeedMoney();
+                transactionLog.writeMethod();
                 purchasingProduct = true;
             } else if(bill.isBlank()) {
                 continue;
@@ -196,6 +198,7 @@ public class Purchase extends VendingMachineCLI {
                         transactionLog.setBalanceAfterTransaction(currentBalance);
                         decreaseItemQuantity(itemSelected);
                         transactionLog.getItemPurchased(itemSelected);
+                        transactionLog.printItemPurchased();
                         transactionLog.writeMethod();
                         displayMenu.returnItemMessage(itemSelected);
                         messageDelay(QUICK_DELAY_TIME);
@@ -217,7 +220,6 @@ public class Purchase extends VendingMachineCLI {
             }
         }
         if(!insufficientFunds) {
-            transactionLog.setBalanceAfterTransaction(currentBalance);
             System.out.println("\n" + getCurrentMoneyProvided());
         }
     }
@@ -255,7 +257,9 @@ public class Purchase extends VendingMachineCLI {
             System.out.println(NUMBER_OF_PENNIES_MESSAGE + numberOfPennies);
         }
         changeRequired = 0;
-        transactionLog.setBalanceAfterTransaction(currentBalance);
+        transactionLog.setBalanceAfterTransaction(changeRequired);
+        transactionLog.printChangeGiven();
+        transactionLog.writeMethod();
         return changeRequired;
     }
 

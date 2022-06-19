@@ -18,6 +18,7 @@ public class TransactionLog {
     private static final String PM = " PM ";
     private static final String FEED_MONEY = "FEED MONEY";
     private static final String GIVE_CHANGE = "GIVE CHANGE";
+    private static boolean amOrPmChecked;
     private static String itemSlot;
     private static String itemName;
     private static String itemPurchased = new String();
@@ -35,19 +36,25 @@ public class TransactionLog {
     private String message = new String();
 
     public void writeMethod() {
-        checkAmOrPm();
+
+        if(!amOrPmChecked) {
+            checkAmOrPm();
+            amOrPmChecked = true;
+        }
         fixDateString();
-        printItemPurchased();
 
         String logFilePath = "Log.txt";
         File logFile = new File(logFilePath);
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(logFile, true))) {
-            if(purchase) {
-                writer.println(purchaseMessage);
-            } else if(feedMoney) {
-                writer.println(feedMoneyMessage);
-            } else if(giveChange) {
-                writer.println(giveChangeMessage);
+            if(purchase && !feedMoney && !giveChange) {
+                writer.println(printItemPurchased());
+                purchase = false;
+            } else if(!purchase && feedMoney && !giveChange) {
+                writer.println(printFeedMoney());
+                feedMoney = false;
+            } else if(!purchase && !feedMoney && giveChange) {
+                writer.println(printChangeGiven());
+                giveChange = false;
             }
         } catch (FileNotFoundException e) {
             System.out.println("File was not found.");
@@ -55,7 +62,7 @@ public class TransactionLog {
     }
 
     public String printItemPurchased() {
-        purchaseMessage = fixedDateString + " " + timeString + itemPurchased + " " + dollarAmount.format(balanceBefore) + " " + dollarAmount.format(balanceAfter);
+        purchaseMessage = fixedDateString + " " + timeString + itemPurchased + dollarAmount.format(balanceBefore) + " " + dollarAmount.format(balanceAfter);
         purchase = true;
         return purchaseMessage;
     }
@@ -88,5 +95,17 @@ public class TransactionLog {
 
     public double setBalanceAfterTransaction(double balance) {
         return balanceAfter = balance;
+    }
+
+    public String printFeedMoney() {
+        feedMoneyMessage = fixedDateString + " " + timeString + FEED_MONEY + " " + dollarAmount.format(balanceBefore) + " " + dollarAmount.format(balanceAfter);
+        feedMoney = true;
+        return feedMoneyMessage;
+    }
+
+    public String printChangeGiven() {
+        giveChangeMessage = fixedDateString + " " +  timeString + GIVE_CHANGE + " " + dollarAmount.format(balanceBefore) + " " + dollarAmount.format(balanceAfter);
+        giveChange = true;
+        return giveChangeMessage;
     }
 }
