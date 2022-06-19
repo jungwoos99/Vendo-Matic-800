@@ -141,9 +141,9 @@ public class Purchase extends VendingMachineCLI {
         moneyFedString = read.nextLine();
         String[] bills = moneyFedString.replaceAll("\\$", "").replaceAll(".00", "").split(" ");
         moneyFed = 0;
-        transactionLog.setBalanceBeforeTransaction(currentBalance);
         for(String bill : bills) {
             if(bill.equals("1") || bill.equals("2") || bill.equals("5") || bill.equals("10")) {
+                transactionLog.setBalanceBeforeTransaction(currentBalance);
                 moneyFed = Double.valueOf(bill);
                 currentBalance += moneyFed;
                 setTotalMoneyInserted(moneyFed);
@@ -178,13 +178,14 @@ public class Purchase extends VendingMachineCLI {
         if(!itemPricesExtracted) {
             pullItemPrice();
         }
-        transactionLog.setBalanceBeforeTransaction(currentBalance);
+
 
         while(purchasingProduct) {
             displayMenu.displayItemsList();
             System.out.println("\nPlease select an item slot or enter (1) to return: ");
             System.out.println("\n" + getCurrentMoneyProvided());
             itemSelected = read.nextLine().toUpperCase().replaceAll(" ", "");
+            transactionLog.setBalanceBeforeTransaction(currentBalance);
             if(itemSelected.length() > 2) {
                 System.out.println(MULTIPLE_SLOTS_ENTERED_MESSAGE);
                 messageDelay(MEDIUM_DELAY_TIME);
