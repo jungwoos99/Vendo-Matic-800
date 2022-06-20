@@ -23,7 +23,6 @@ public class Purchase extends VendingMachineCLI {
     private final int PENNY = 1;
 
     private static double currentBalance = 0.0;
-    private static double totalMoneyInserted = 0;
     private static double moneyFed;
     private double selectedItemPrice = 0;
     private String itemSelected = new String();
@@ -50,8 +49,6 @@ public class Purchase extends VendingMachineCLI {
     private static final String INVALID_SLOT_MESSAGE = NEXT_LINE + "***Please select a valid slot***" + NEXT_LINE;
     private static final String FEED_MONEY_MESSAGE = NEXT_LINE + "Please enter funds in the form of $1, $2, $5, or $10 bill(s)" + NEXT_LINE + NEXT_LINE +"If you have multiple bills, please enter one-by-one (separated by a space)" + NEXT_LINE +"Enter (0) to return" + NEXT_LINE;
     private static final String INSUFFICIENT_FUNDS_INVALID_SELECTION_MESSAGE = NEXT_LINE + "***Please select from the given options***";
-    private static final String FEED_MONEY = "FEED MONEY";
-    private static final String GIVE_CHANGE = "GIVE CHANGE";
 
     private static Map<String, Double> itemPrices = new HashMap<>();
     private static Map<String, Integer> coinAmounts = new HashMap<>();
@@ -65,10 +62,6 @@ public class Purchase extends VendingMachineCLI {
 
     public Purchase(Menu menu) {
         super(menu);
-    }
-
-    public void setTotalMoneyInserted(double moneyFed) {
-        this.totalMoneyInserted = moneyFed;
     }
 
     public String getCurrentMoneyProvided() {
@@ -146,7 +139,6 @@ public class Purchase extends VendingMachineCLI {
                 transactionLog.setBalanceBeforeTransaction(currentBalance);
                 moneyFed = Double.valueOf(bill);
                 currentBalance += moneyFed;
-                setTotalMoneyInserted(moneyFed);
                 assignChange();
                 if(bill == bills[bills.length-1]) {
                     System.out.println("\n" + getCurrentMoneyProvided());

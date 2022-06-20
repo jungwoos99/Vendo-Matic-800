@@ -5,7 +5,6 @@ import com.techelevator.view.Menu;
 public class VendingMachineCLI {
 
 	private boolean inPurchaseMenu;
-	private boolean transactionComplete = false;
 
 	private static final String VENDING_MACHINE_START_MESSAGE = "<Thank you for choosing Vend-O>";
 	private static final String MAIN_MENU_OPTION_DISPLAY_ITEMS = "-Display Vending Machine Items-";

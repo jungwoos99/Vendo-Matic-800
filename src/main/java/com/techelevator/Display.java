@@ -8,16 +8,19 @@ public class Display {
 
     private static boolean itemsGivenNames;
     private static int initialAmount = 5;
-    private static boolean initialAmountsAssigned = false;
+    protected static boolean initialAmountsAssigned = false;
     protected static Map<String, String> itemQuantities = new HashMap<>();
     private static List<String> itemSlots = new ArrayList<>();
     protected static List<String> vendingMachineItemsList = new ArrayList<>();
     protected static List<String> itemTypes = new ArrayList<>();
-    private static File vendingMachineItemsCsv = new File("/Users/jungwooseo/Downloads/capstone-1-main/vendingmachine.csv");
+    private static String vendingMachinePath = "/Users/jungwooseo/Desktop/ForkedCapstone/capstone-1/vendingmachine.csv";
+    private File vendingMachineItemsCsv = new File(vendingMachinePath);
     private static Map<String, String> itemSpecificMessages = new HashMap<>();
     private static Map<String, String> itemSlotTypes = new HashMap<>();
     protected static boolean itemsListCreated;
     protected static Map<String, String> itemSlotsWithItemNames = new HashMap<>();
+    private static String filePath = new String();
+    private static File file;
 
     private static final String CHIP_MESSAGE = "Crunch Crunch, Yum!";
     private static final String CANDY_MESSAGE = "Munch Munch, Yum!";
@@ -43,37 +46,48 @@ public class Display {
     }
 
     //Gets lines from file and assigns them to a list to circumvent opening and closing the file multiple times
-    public List<String> getLinesOfText() {
+    public List<String> getLinesOfText(String filePath) {
+        List<String> itemsLines = new ArrayList<>();
+        File file = new File(filePath);
         String lineOfFile = new String();
-        try (Scanner fileReader = new Scanner(vendingMachineItemsCsv)) {
+        try (Scanner fileReader = new Scanner(file)) {
             while(fileReader.hasNextLine()) {
                 lineOfFile = fileReader.nextLine().replaceAll("\\|", " - ");
-                vendingMachineItemsList.add(lineOfFile);
+                itemsLines.add(lineOfFile);
             }
         }catch (FileNotFoundException e) {
             System.out.println("File not found.");
         }
+        vendingMachineItemsList = itemsLines;
+        itemsLines = null;
         return vendingMachineItemsList;
     }
 
     //Extracts slot number from the lines of the file and adds them to a list<String>
-    public List<String> pullItemSlots() {
+    public List<String> pullItemSlots(List<String> itemsList) {
+        List<String> slots = new ArrayList<>();
         String itemSlot = new String();
-        for(String slotPicker : vendingMachineItemsList) {
+        itemsList = vendingMachineItemsList;
+        for(String slotPicker : itemsList) {
             itemSlot = slotPicker.substring(0, 2);
-            itemSlots.add(itemSlot);
+            slots.add(itemSlot);
         }
+        itemSlots = slots;
+        slots = null;
         return itemSlots;
     }
 
     //Iterates through list of slots and gives each slot a quantity of 5, then prevents a reassignment of 5 when display is called
     public Map<String, String> assignItemQuantities(int initialAmount, List<String> itemSlots) {
+        Map<String, String> itemWithQuantity = new HashMap<>();
         if(initialAmountsAssigned == false) {
             for(String slot: itemSlots) {
                 String initialAmountString = String.valueOf(initialAmount);
-                itemQuantities.put(slot, initialAmountString);
+                itemWithQuantity.put(slot, initialAmountString);
             }
         }
+        itemQuantities = itemWithQuantity;
+        itemWithQuantity = null;
         initialAmountsAssigned = true;
         return itemQuantities;
     }
@@ -126,8 +140,8 @@ public class Display {
     }
 
     public void generateItemsList() {
-        display.getLinesOfText();
-        display.pullItemSlots();
+        display.getLinesOfText(vendingMachinePath);
+        display.pullItemSlots(vendingMachineItemsList);
         display.assignItemQuantities(initialAmount, itemSlots);
         assignSlotWithItemName();
     }
