@@ -145,12 +145,16 @@ public class Display {
         return itemSpecificMessages;
     }
 
-    public void returnItemMessage(String itemSlot) {
+    public String returnItemMessage(String itemSlot) {
         pullItemTypes(itemsList);
         assignSlotToItemType(itemsList);
         assignItemToMessage(itemTypeList);
         String itemType = itemSlotTypes.get(itemSlot);
-        System.out.println("\n" + itemSpecificMessages.get(itemType));
+        return itemSpecificMessages.get(itemType);
+    }
+
+    public String returnItemName(String itemSlot) {
+        return itemSlotsWithItemNames.get(itemSlot);
     }
 
     public void generateItemsList() {

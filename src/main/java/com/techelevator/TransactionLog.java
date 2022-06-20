@@ -18,7 +18,11 @@ public class TransactionLog {
     private static final String PM = " PM ";
     private static final String FEED_MONEY = "FEED MONEY";
     private static final String GIVE_CHANGE = "GIVE CHANGE";
+    private static final String FILE_NOT_FOUND_MESSAGE = "File not found";
+    private static final String LOG_FILE_PATH = "Log.txt";
+    private static final String VENDING_MACHINE_RESTOCKED = "\n<Vending machine restocked>\n";
     private static boolean amOrPmChecked;
+    private static boolean vendingMachineRestocked = true;
     private static String itemSlot;
     private static String itemName;
     private static String itemPurchased = new String();
@@ -31,7 +35,8 @@ public class TransactionLog {
     protected boolean purchase = false;
     protected boolean feedMoney = false;
     protected boolean giveChange = false;
-    NumberFormat dollarAmount = NumberFormat.getCurrencyInstance();
+    private boolean newLog;
+    private NumberFormat dollarAmount = NumberFormat.getCurrencyInstance();
 
     public void writeMethod() {
 
@@ -41,9 +46,14 @@ public class TransactionLog {
         }
         fixDateString();
 
-        String logFilePath = "Log.txt";
-        File logFile = new File(logFilePath);
+        File logFile = new File(LOG_FILE_PATH);
+
+
         try (PrintWriter writer = new PrintWriter(new FileOutputStream(logFile, true))) {
+            if(vendingMachineRestocked) {
+                writer.println(VENDING_MACHINE_RESTOCKED);
+                vendingMachineRestocked = false;
+            }
             if(purchase && !feedMoney && !giveChange) {
                 writer.println(printItemPurchased());
                 purchase = false;
@@ -56,7 +66,7 @@ public class TransactionLog {
             }
             writer.flush();
         } catch (FileNotFoundException e) {
-            System.out.println("File was not found.");
+            System.out.println(FILE_NOT_FOUND_MESSAGE);
         }
     }
 

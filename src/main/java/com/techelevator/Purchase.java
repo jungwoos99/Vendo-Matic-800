@@ -22,14 +22,16 @@ public class Purchase extends VendingMachineCLI {
     private final int NICKEL = 5;
     private final int PENNY = 1;
 
-    private static double currentBalance = 0.0;
+    private static double currentBalance;
     private static double moneyFed;
     private double selectedItemPrice = 0;
     private String itemSelected = new String();
     private static String moneyFedString = new String();
+    private boolean feedingMoney = false;
 
-    protected static final int  MEDIUM_DELAY_TIME = 2000;
-    protected static final int SHORT_DELAY_TIME = 1000;
+    protected static String moneyString = new String();
+    protected static final int  MEDIUM_DELAY_TIME = 1000;
+    protected static final int SHORT_DELAY_TIME = 700;
     private static final int QUICK_DELAY_TIME = 750;
     protected static final String NEXT_LINE = System.lineSeparator();
     private static final String BALANCE_OF_ZERO_STRING = "0.00";
@@ -47,7 +49,7 @@ public class Purchase extends VendingMachineCLI {
     protected static final String GET_CURRENT_MONEY_PROVIDED_MESSAGE = "Current Balance: ";
     private static final String INCORRECT_BILL_MESSAGE = NEXT_LINE + "***Incorrect bill type identified***" + NEXT_LINE;
     private static final String INVALID_SLOT_MESSAGE = NEXT_LINE + "***Please select a valid slot***" + NEXT_LINE;
-    private static final String FEED_MONEY_MESSAGE = NEXT_LINE + "Please enter funds in the form of $1, $2, $5, or $10 bill(s)" + NEXT_LINE + NEXT_LINE +"If you have multiple bills, please enter one-by-one (separated by a space)" + NEXT_LINE +"Enter (0) to return" + NEXT_LINE;
+    protected static final String FEED_MONEY_MESSAGE = NEXT_LINE + "Please enter funds in the form of $1, $2, $5, or $10 bill(s)" + NEXT_LINE + NEXT_LINE +"If you have multiple bills, please enter one-by-one (separated by a space)" + NEXT_LINE +"Enter (0) to return" + NEXT_LINE;
     private static final String INSUFFICIENT_FUNDS_INVALID_SELECTION_MESSAGE = NEXT_LINE + "***Please select from the given options***";
 
     private static Map<String, Double> itemPrices = new HashMap<>();
@@ -67,6 +69,7 @@ public class Purchase extends VendingMachineCLI {
     public String getCurrentMoneyProvided() {
         return String.valueOf(GET_CURRENT_MONEY_PROVIDED_MESSAGE + dollarAmount.format(currentBalance));
     }
+
     public double assignChange() {
         changeRequired = currentBalance;
         return changeRequired;
@@ -80,6 +83,11 @@ public class Purchase extends VendingMachineCLI {
         double price = itemPrices.get(itemSelected);
         currentBalance -= price;
         assignChange();
+        price = 0;
+        return currentBalance;
+    }
+
+    public double getCurrentBalance() {
         return currentBalance;
     }
 
@@ -92,11 +100,14 @@ public class Purchase extends VendingMachineCLI {
     }
 
     public Map<String,Double> pullItemPrice() {
+        Map<String, Double> itemWithPrices = new HashMap<>();
         itemPricesExtracted = false;
         for(String itemInfo : displayMenu.vendingMachineItemsList) {
             String[] itemInfoSections = itemInfo.split(" - ");
-            itemPrices.put(itemInfoSections[0], Double.valueOf(itemInfoSections[2]));
+            itemWithPrices.put(itemInfoSections[0], Double.valueOf(itemInfoSections[2]));
         }
+        itemPrices = itemWithPrices;
+        itemWithPrices = null;
         itemPricesExtracted = true;
         return itemPrices;
     }
@@ -119,7 +130,9 @@ public class Purchase extends VendingMachineCLI {
         System.out.println(INSERT_MORE_MONEY_PROMPT);
         String insertMoreChoice = read.nextLine();
         if(insertMoreChoice.equals("1")) {
-            feedMoney();
+            System.out.println(Purchase.FEED_MONEY_MESSAGE);
+            String moneyFed = read.nextLine();
+            feedMoney(moneyFed);
         } else if (insertMoreChoice.equals("2")){
             purchaseProduct();
         } else {
@@ -129,33 +142,30 @@ public class Purchase extends VendingMachineCLI {
     }
 
     //takes an input from user and sets the current money provided
-    public double feedMoney() {
-        System.out.println(FEED_MONEY_MESSAGE);
-        moneyFedString = read.nextLine();
+    public double feedMoney(String moneyString) {
+        moneyFedString = moneyString;
+        feedingMoney = true;
+        double balance = 0;
         String[] bills = moneyFedString.replaceAll("\\$", "").replaceAll(".00", "").split(" ");
         moneyFed = 0;
         for(String bill : bills) {
-            if(bill.equals("1") || bill.equals("2") || bill.equals("5") || bill.equals("10")) {
-                transactionLog.setBalanceBeforeTransaction(currentBalance);
+            if (bill.equals("1") || bill.equals("2") || bill.equals("5") || bill.equals("10")) {
+                transactionLog.setBalanceBeforeTransaction(currentBalance);/**/
                 moneyFed = Double.valueOf(bill);
                 currentBalance += moneyFed;
-                assignChange();
-                if(bill == bills[bills.length-1]) {
-                    System.out.println("\n" + getCurrentMoneyProvided());
-                }
                 transactionLog.setBalanceAfterTransaction(currentBalance);
+                assignChange();
                 transactionLog.printFeedMoney();
                 transactionLog.writeMethod();
                 purchasingProduct = true;
-            } else if(bill.isBlank()) {
+            } else if (bill.isBlank()) {
                 continue;
-            }else if (bill.equals("0")) {
+            } else if (bill.equals("0")) {
+                feedingMoney = false;
                 purchasingProduct = true;
-                System.out.println("\n" + getCurrentMoneyProvided());
-            }else {
+            } else {
                 System.out.println(INCORRECT_BILL_MESSAGE);
                 messageDelay(SHORT_DELAY_TIME);
-                System.out.println(getCurrentMoneyProvided());
                 purchasingProduct = false;
                 break;
             }
@@ -193,11 +203,12 @@ public class Purchase extends VendingMachineCLI {
                         transactionLog.getItemPurchased(itemSelected);
                         transactionLog.printItemPurchased();
                         transactionLog.writeMethod();
-                        displayMenu.returnItemMessage(itemSelected);
-                        messageDelay(QUICK_DELAY_TIME);
+                        printItemPurchase(itemSelected);
+                        messageDelay(MEDIUM_DELAY_TIME);
                     }else if(displayMenu.itemQuantities.get(itemSelected).equals(SOLD_OUT_INDICATOR)) {
                         System.out.println("\n" + SOLD_OUT_MESSAGE);
                         messageDelay(MEDIUM_DELAY_TIME);
+                        purchasingProduct = false;
                     }
                 } else {
                     System.out.println(INSUFFICIENT_FUNDS_MESSAGE);
@@ -208,6 +219,7 @@ public class Purchase extends VendingMachineCLI {
             } else if(!displayMenu.itemQuantities.containsKey(itemSelected) && !itemSelected.equals("1")) {
                 System.out.println(INVALID_SLOT_MESSAGE);
                 messageDelay(SHORT_DELAY_TIME);
+                purchasingProduct = false;
             } else if(itemSelected.equals("1")) {
                 purchasingProduct = false;
             }
@@ -278,4 +290,15 @@ public class Purchase extends VendingMachineCLI {
         System.out.println(TRANSACTION_COMPLETED_MESSAGE);
     }
 
+    public void displayCurrentBalance() {
+        System.out.println("\n" + getCurrentMoneyProvided());
+    }
+
+    public double resetCurrentBalance() {
+        return currentBalance = 0;
+    }
+
+    public void printItemPurchase(String itemSelected) {
+        System.out.println("\n" + displayMenu.returnItemName(itemSelected) + " -" + displayMenu.returnItemMessage(itemSelected) + "- (" + dollarAmount.format(itemPrices.get(itemSelected)) + ")");
+    }
 }

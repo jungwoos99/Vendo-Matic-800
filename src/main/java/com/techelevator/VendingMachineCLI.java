@@ -2,6 +2,8 @@ package com.techelevator;
 
 import com.techelevator.view.Menu;
 
+import java.util.Scanner;
+
 public class VendingMachineCLI {
 
 	private boolean inPurchaseMenu;
@@ -22,8 +24,10 @@ public class VendingMachineCLI {
 	private static final String[] PURCHASE_MENU_OPTIONS = {PURCHASE_MENU_OPTION_FEED_MONEY, PURCHASE_MENU_OPTION_SELECT_A_PRODUCT, PURCHASE_MENU_OPTION_FINISH_TRANSACTION};
 
 	private Display display = new Display();
+	private Scanner read = new Scanner(System.in);
 	private static Purchase purchase;
 	private static Menu menu;
+	private static TransactionLog transactionLog;
 
 	public VendingMachineCLI(Menu menu) {
 		this.menu = menu;
@@ -38,6 +42,7 @@ public class VendingMachineCLI {
 	public static void main(String[] args) {
 		Menu menu = new Menu(System.in, System.out);
 		purchase = new Purchase();
+		transactionLog = new TransactionLog();
 		VendingMachineCLI cli = new VendingMachineCLI(menu);
 		System.out.println(VENDING_MACHINE_START_MESSAGE);
 		cli.run();
@@ -56,16 +61,19 @@ public class VendingMachineCLI {
 					display.displayItemsList();
 			/* */} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
 					// do purchase
-					display.displayItemsList();
 					System.out.println("\n" + purchase.getCurrentMoneyProvided());
 					inPurchaseMenu = true;
 					while (inPurchaseMenu) {
 						String purchaseChoice = (String) menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS);
 						//feed money
 						if(purchaseChoice.equals(PURCHASE_MENU_OPTION_FEED_MONEY)) {
-							purchase.feedMoney();
+							System.out.println(Purchase.FEED_MONEY_MESSAGE);
+							String moneyFed = read.nextLine();
+							purchase.feedMoney(moneyFed);
+							purchase.displayCurrentBalance();
 						} else if(purchaseChoice.equals(PURCHASE_MENU_OPTION_SELECT_A_PRODUCT)) {
 							//select a product
+							display.displayItemsList();
 							purchase.purchaseProduct();
 						} else if(purchaseChoice.equals(PURCHASE_MENU_OPTION_FINISH_TRANSACTION)) {
 							//finishes purchase(s)
