@@ -20,7 +20,9 @@ public class Display {
     protected static boolean itemsListCreated;
     protected static Map<String, String> itemSlotsWithItemNames = new HashMap<>();
     private static String filePath = new String();
+    private List<String> itemsList;
     private static File file;
+    private List<String> itemTypeList = new ArrayList<>();
 
     private static final String CHIP_MESSAGE = "Crunch Crunch, Yum!";
     private static final String CANDY_MESSAGE = "Munch Munch, Yum!";
@@ -92,49 +94,61 @@ public class Display {
         return itemQuantities;
     }
 
-    public List<String> pullItemTypes() {
+    public List<String> pullItemTypes(List<String> itemsList) {
+        List<String> itemTypesList = new ArrayList<>();
+        itemsList = vendingMachineItemsList;
         String itemType = new String();
-        for(String type : vendingMachineItemsList) {
+        for(String type : itemsList) {
             String[] itemInfo = type.split(" - ");
             itemType = itemInfo[3];
-            if(!itemTypes.contains(itemType)) {
-                itemTypes.add(itemType);
+            if(!itemTypesList.contains(itemType)) {
+                itemTypesList.add(itemType);
             }
         }
+        itemTypes = itemTypesList;
+        itemTypesList = null;
         return itemTypes;
     }
 
-    public Map<String, String> assignSlotToItemType() {
+    public Map<String, String> assignSlotToItemType(List<String> itemsList) {
+        Map<String, String> itemWithType = new HashMap<>();
         String itemSlot = new String();
         String itemType = new String();
-        for(String itemInfo : vendingMachineItemsList) {
+        itemsList = vendingMachineItemsList;
+        for(String itemInfo : itemsList) {
             String[] itemInformation = itemInfo.split(" - ");
             itemSlot = itemInformation[0];
             itemType = itemInformation[3];
-            itemSlotTypes.put(itemSlot, itemType);
+            itemWithType.put(itemSlot, itemType);
         }
+        itemSlotTypes = itemWithType;
+        itemWithType = null;
         return itemSlotTypes;
     }
 
-    public Map<String, String> assignItemToMessage() {
-        for(String itemType : itemTypes) {
+    public Map<String, String> assignItemToMessage(List<String> itemTypeList) {
+        Map<String, String> itemMessages = new HashMap<>();
+        itemTypeList = itemTypes;
+        for(String itemType : itemTypeList) {
             if(itemType.equals("Chip")) {
-                itemSpecificMessages.put(itemType, CHIP_MESSAGE);
+                itemMessages.put(itemType, CHIP_MESSAGE);
             } else if(itemType.equals("Candy")) {
-                itemSpecificMessages.put(itemType, CANDY_MESSAGE);
+                itemMessages.put(itemType, CANDY_MESSAGE);
             } else if(itemType.equals("Drink")) {
-                itemSpecificMessages.put(itemType, DRINK_MESSAGE);
+                itemMessages.put(itemType, DRINK_MESSAGE);
             } else if(itemType.equals("Gum")) {
-                itemSpecificMessages.put(itemType, GUM_MESSAGE);
+                itemMessages.put(itemType, GUM_MESSAGE);
             }
         }
+        itemSpecificMessages = itemMessages;
+        itemMessages = null;
         return itemSpecificMessages;
     }
 
     public void returnItemMessage(String itemSlot) {
-        pullItemTypes();
-        assignSlotToItemType();
-        assignItemToMessage();
+        pullItemTypes(itemsList);
+        assignSlotToItemType(itemsList);
+        assignItemToMessage(itemTypeList);
         String itemType = itemSlotTypes.get(itemSlot);
         System.out.println("\n" + itemSpecificMessages.get(itemType));
     }
@@ -143,15 +157,19 @@ public class Display {
         display.getLinesOfText(vendingMachinePath);
         display.pullItemSlots(vendingMachineItemsList);
         display.assignItemQuantities(initialAmount, itemSlots);
-        assignSlotWithItemName();
+        assignSlotWithItemName(itemSlots);
     }
 
-    public Map<String, String> assignSlotWithItemName() {
-        for(String itemInfo : vendingMachineItemsList) {
+    public Map<String, String> assignSlotWithItemName(List<String> itemsList) {
+        itemsList = vendingMachineItemsList;
+        Map<String, String> itemNames = new HashMap<>();
+        for(String itemInfo : itemsList) {
             String[] itemInfoParts = itemInfo.split(" - ");
-            itemSlotsWithItemNames.put(itemInfoParts[0], itemInfoParts[1]);
+            itemNames.put(itemInfoParts[0], itemInfoParts[1]);
         }
         itemsGivenNames = true;
+        itemSlotsWithItemNames = itemNames;
+        itemNames = null;
         return itemSlotsWithItemNames;
     }
 }

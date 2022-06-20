@@ -1,0 +1,5 @@
+A1|CandyMan|5.00|Candy
+B1|PowerDrink|1.00|Drink
+C1|ChewChew|2.50|Gum
+D1|CrunchBunch|3.00|Chip
+E1|EnergyLiquid|5.00|Drink
