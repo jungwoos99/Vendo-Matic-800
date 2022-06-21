@@ -176,4 +176,10 @@ public class Display {
         itemNames = null;
         return itemSlotsWithItemNames;
     }
+
+    public void showVendingMachineItems() {
+        for(String item : vendingMachineItemsList) {
+            System.out.println(item + " (" + itemQuantities.get(item.substring(0, 2)) + ") ");
+        }
+    }
 }

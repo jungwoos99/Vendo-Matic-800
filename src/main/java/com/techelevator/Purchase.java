@@ -134,6 +134,7 @@ public class Purchase extends VendingMachineCLI {
             String moneyFed = read.nextLine();
             feedMoney(moneyFed);
         } else if (insertMoreChoice.equals("2")){
+            displayMenu.showVendingMachineItems();
             purchaseProduct();
         } else {
             System.out.println(INSUFFICIENT_FUNDS_INVALID_SELECTION_MESSAGE);
@@ -157,6 +158,7 @@ public class Purchase extends VendingMachineCLI {
                 assignChange();
                 transactionLog.printFeedMoney();
                 transactionLog.writeMethod();
+                displayMenu.showVendingMachineItems();
                 purchasingProduct = true;
             } else if (bill.isBlank()) {
                 continue;
@@ -180,10 +182,7 @@ public class Purchase extends VendingMachineCLI {
         if(!itemPricesExtracted) {
             pullItemPrice();
         }
-
-
         while(purchasingProduct) {
-            displayMenu.displayItemsList();
             System.out.println("\nPlease select an item slot or enter (1) to return: ");
             System.out.println("\n" + getCurrentMoneyProvided());
             itemSelected = read.nextLine().toUpperCase().replaceAll(" ", "");
@@ -205,6 +204,7 @@ public class Purchase extends VendingMachineCLI {
                         transactionLog.writeMethod();
                         printItemPurchase(itemSelected);
                         messageDelay(MEDIUM_DELAY_TIME);
+                        displayMenu.showVendingMachineItems();
                     }else if(displayMenu.itemQuantities.get(itemSelected).equals(SOLD_OUT_INDICATOR)) {
                         System.out.println("\n" + SOLD_OUT_MESSAGE);
                         messageDelay(MEDIUM_DELAY_TIME);
@@ -299,6 +299,6 @@ public class Purchase extends VendingMachineCLI {
     }
 
     public void printItemPurchase(String itemSelected) {
-        System.out.println("\n" + displayMenu.returnItemName(itemSelected) + " -" + displayMenu.returnItemMessage(itemSelected) + "- (" + dollarAmount.format(itemPrices.get(itemSelected)) + ")");
+        System.out.println("\n" + displayMenu.returnItemName(itemSelected) + " -" + displayMenu.returnItemMessage(itemSelected) + "- (" + dollarAmount.format(itemPrices.get(itemSelected)) + ")\n");
     }
 }
