@@ -23,7 +23,7 @@ public class VendingMachineCLI {
 	private static final String[] MAIN_MENU_OPTIONS = { MAIN_MENU_OPTION_DISPLAY_ITEMS, MAIN_MENU_OPTION_PURCHASE, MAIN_MENU_OPTION_EXIT};
 	private static final String[] PURCHASE_MENU_OPTIONS = {PURCHASE_MENU_OPTION_FEED_MONEY, PURCHASE_MENU_OPTION_SELECT_A_PRODUCT, PURCHASE_MENU_OPTION_FINISH_TRANSACTION};
 
-	private Display display = new Display();
+	private static Display display = new Display();
 	private Scanner read = new Scanner(System.in);
 	private static Purchase purchase;
 	private static Menu menu;
@@ -44,6 +44,7 @@ public class VendingMachineCLI {
 		purchase = new Purchase();
 		transactionLog = new TransactionLog();
 		VendingMachineCLI cli = new VendingMachineCLI(menu);
+		display.displayItemsList();
 		System.out.println(VENDING_MACHINE_START_MESSAGE);
 		cli.run();
 	}
@@ -58,7 +59,7 @@ public class VendingMachineCLI {
 			String choice = (String) menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			/* */if (choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
 					// display vending machine items
-					display.displayItemsList();
+					display.showVendingMachineItems();
 			/* */} else if (choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
 					// do purchase
 					System.out.println("\n" + purchase.getCurrentMoneyProvided());
@@ -73,7 +74,7 @@ public class VendingMachineCLI {
 							purchase.displayCurrentBalance();
 						} else if(purchaseChoice.equals(PURCHASE_MENU_OPTION_SELECT_A_PRODUCT)) {
 							//select a product
-							display.displayItemsList();
+							display.showVendingMachineItems();
 							purchase.purchaseProduct();
 						} else if(purchaseChoice.equals(PURCHASE_MENU_OPTION_FINISH_TRANSACTION)) {
 							//finishes purchase(s)

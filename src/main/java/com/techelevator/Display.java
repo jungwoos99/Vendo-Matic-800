@@ -41,10 +41,6 @@ public class Display {
             assignItemQuantities(initialAmount, vendingMachineItemsList);
             initialAmountsAssigned = true;
         }
-        for(String itemInfo : vendingMachineItemsList) {
-            String itemSlot = itemInfo.substring(0, 2);
-            System.out.println(itemInfo + " (" + itemQuantities.get(itemSlot) + ")");
-        }
     }
 
     //Gets lines from file and assigns them to a list to circumvent opening and closing the file multiple times

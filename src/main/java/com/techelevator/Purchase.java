@@ -158,7 +158,6 @@ public class Purchase extends VendingMachineCLI {
                 assignChange();
                 transactionLog.printFeedMoney();
                 transactionLog.writeMethod();
-                displayMenu.showVendingMachineItems();
                 purchasingProduct = true;
             } else if (bill.isBlank()) {
                 continue;
@@ -214,6 +213,7 @@ public class Purchase extends VendingMachineCLI {
                     System.out.println(INSUFFICIENT_FUNDS_MESSAGE);
                     messageDelay(MEDIUM_DELAY_TIME);
                     insufficientFundsPrompt();
+                    displayMenu.showVendingMachineItems();
                     insufficientFunds = true;
                 }
             } else if(!displayMenu.itemQuantities.containsKey(itemSelected) && !itemSelected.equals("1")) {
@@ -300,5 +300,9 @@ public class Purchase extends VendingMachineCLI {
 
     public void printItemPurchase(String itemSelected) {
         System.out.println("\n" + displayMenu.returnItemName(itemSelected) + " -" + displayMenu.returnItemMessage(itemSelected) + "- (" + dollarAmount.format(itemPrices.get(itemSelected)) + ")\n");
+    }
+
+    public void callPurchase() {
+
     }
 }
